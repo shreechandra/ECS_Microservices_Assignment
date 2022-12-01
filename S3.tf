@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "artifacts_bucket_name" {
-  bucket = "ecspipartificat"  
+  bucket = "bucket233"  
   acl    = "private"
 
   tags = {

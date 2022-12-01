@@ -1,0 +1,56 @@
+version: 0.2
+
+
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/i8g4q7b2
+      - uri1=public.ecr.aws/i8g4q7b2/ecr-1
+      - uri2=public.ecr.aws/i8g4q7b2/ecr-2
+      - uri3=public.ecr.aws/i8g4q7b2/ecr-3
+      - uri4=public.ecr.aws/i8g4q7b2/ecr-4
+      - uri5=public.ecr.aws/i8g4q7b2/ecr-5
+      - uri6=public.ecr.aws/i8g4q7b2/ecr-6
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build -t service1 -f ./service1/dockerfile .
+      - docker tag service1:latest $uri1:latest
+      - docker build -t service2 -f ./service2/dockerfile .
+      - docker tag service2:latest $uri2:latest
+      - docker build -t service3 -f ./service3/dockerfile .
+      - docker tag service3:latest $uri3:latest
+      - docker build -t service4 -f ./service4/dockerfile .
+      - docker tag service4:latest $uri4:latest
+      - docker build -t service5 -f ./service5/dockerfile .
+      - docker tag service5:latest $uri5:latest
+      - docker build -t service6 -f ./Service6/dockerfile .
+      - docker tag service6:latest $uri6:latest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $uri1:latest
+      - docker push $uri2:latest
+      - docker push $uri3:latest
+      - docker push $uri4:latest
+      - docker push $uri5:latest
+      - docker push $uri6:latest
+      - echo Writing image definitions file...
+      - printf '[{"name":"service1","imageUri":"%s"}]' $uri1:latest > service1.json
+      - printf '[{"name":"service2","imageUri":"%s"}]' $uri2:latest > service2.json
+      - printf '[{"name":"service3","imageUri":"%s"}]' $uri3:latest > service3.json
+      - printf '[{"name":"service4","imageUri":"%s"}]' $uri4:latest > service4.json
+      - printf '[{"name":"service5","imageUri":"%s"}]' $uri5:latest > service5.json
+      - printf '[{"name":"service6","imageUri":"%s"}]' $uri6:latest > service6.json
+artifacts:
+    files:
+        - service1.json
+        - service2.json
+        - service3.json
+        - service4.json
+        - service5.json
+        - service6.json
